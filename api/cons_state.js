@@ -16,6 +16,8 @@ export default (ctx) => {
   function _insertData (cPoint, body, author, created) {
     const data = _.map(body, (value, type) => {
       // TODO: if type === battery ...
+      value = value * (cPoint.info[type].coef || 1)
+      // TODO: update mean
       return { pointid: cPoint.id, author, value, type, created }
     })
     return knex(TNAMES.CONSUMPTIONSTATE).insert(data)

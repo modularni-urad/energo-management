@@ -7,7 +7,6 @@ exports.up = (knex, Promise) => {
       .references('id').inTable(TNAMES.CONSUMPTIONPOINT)
     table.enum('type', _.values(MEDIUMTYPE))
     table.string('author')
-    table.float('realvalue')
     table.float('value').notNullable()
     table.timestamp('created').notNullable().defaultTo(knex.fn.now())
     table.primary(['pointid', 'type', 'created'])

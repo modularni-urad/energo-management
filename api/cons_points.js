@@ -13,7 +13,7 @@ export default (ctx) => {
     }).catch(next)
   })
 
-  const editables = ['app_id', 'dev_id', 'types', 'desc', 'lat', 'lng', 'alt']
+  const editables = ['app_id', 'dev_id', 'info', 'desc', 'lat', 'lng', 'alt']
 
   app.post('/', auth.required, JSONBodyParser, (req, res, next) => {
     req.body = _.pick(req.body, editables)
