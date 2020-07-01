@@ -2,7 +2,7 @@ import express from 'express'
 import path from 'path'
 import bodyParser from 'body-parser'
 import initErrorHandlers from 'modularni-urad-utils/error_handlers'
-import { initAuth, getUid, required } from 'modularni-urad-utils/auth'
+import { initAuth } from 'modularni-urad-utils/auth'
 import initDB from 'modularni-urad-utils/db'
 import InitApp from './index'
 
@@ -13,15 +13,9 @@ export async function init (mocks = null) {
     : await initDB(migrationsDir)
   const app = express()
   const JSONBodyParser = bodyParser.json()
+  const auth = mocks ? mocks.auth : initAuth(app)
+  const appContext = { express, knex, auth, JSONBodyParser }
 
-  !mocks && initAuth(app)
-
-  const appContext = {
-    express,
-    knex,
-    auth: mocks ? mocks.auth : { getUid, required },
-    JSONBodyParser
-  }
   app.use(InitApp(appContext))
 
   initErrorHandlers(app) // ERROR HANDLING
