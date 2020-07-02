@@ -1,11 +1,10 @@
-import _ from 'underscore'
-import { TNAMES, MEDIUMTYPE } from '../consts'
+import { TNAMES } from '../consts'
 
 exports.up = (knex, Promise) => {
   return knex.schema.createTable(TNAMES.CONSUMPTIONSTATE, (table) => {
     table.integer('pointid').notNullable()
       .references('id').inTable(TNAMES.CONSUMPTIONPOINT)
-    table.enum('type', _.values(MEDIUMTYPE))
+    table.string('type', 8)
     table.string('author')
     table.float('value').notNullable()
     table.timestamp('created').notNullable().defaultTo(knex.fn.now())

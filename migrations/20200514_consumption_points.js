@@ -3,7 +3,7 @@ import { TNAMES } from '../consts'
 exports.up = (knex, Promise) => {
   return knex.schema.createTable(TNAMES.CONSUMPTIONPOINT, (table) => {
     table.increments('id').primary()
-    table.json('info').notNullable()
+    table.json('info').notNullable().defaultTo({})
     table.string('app_id')
     table.string('dev_id')
     table.string('desc')

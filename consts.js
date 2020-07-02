@@ -1,8 +1,7 @@
 
 export const TNAMES = {
   CONSUMPTIONPOINT: 'consumption_point',
-  CONSUMPTIONSTATE: 'consumption_state',
-  CONSUMPTIONINFO: 'consumption_info'
+  CONSUMPTIONSTATE: 'consumption_state'
 }
 
 export const STATUS = {

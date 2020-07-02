@@ -9,7 +9,8 @@ module.exports = (g) => {
 
   const info = {
     batt: { status: 'normal' },
-    watr: { coef: 1, status: 'normal' }
+    watr: { status: 'normal' },
+    coefs: { watr: 1 }
   }
   const p1 = {
     app_id: 'app1',
