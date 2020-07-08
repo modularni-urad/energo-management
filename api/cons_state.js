@@ -16,7 +16,7 @@ export default (ctx) => {
   function _insertData (cPoint, body, author, created) {
     const data = _.map(body, (value, type) => {
       // TODO: if type === battery ...
-      const coef = cPoint.info.coefs ? cPoint.info.coefs[type] : 1
+      const coef = cPoint.settings.coef ? cPoint.info.coef : 1
       value = value * (coef || 1)
       // TODO: update mean
       return { pointid: cPoint.id, author, value, type, created }

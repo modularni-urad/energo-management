@@ -7,15 +7,13 @@ module.exports = (g) => {
   //
   const r = chai.request(g.baseurl)
 
-  const info = {
-    batt: { status: 'normal' },
-    watr: { status: 'normal' },
-    coefs: { watr: 1 }
+  const settings = {
+    coef: 1
   }
   const p1 = {
     app_id: 'app1',
     dev_id: 'p1',
-    info: info,
+    settings: settings,
     desc: 'pok1 with device'
   }
 
@@ -48,7 +46,7 @@ module.exports = (g) => {
       const res = await r.get('/points')
       res.status.should.equal(200)
       res.body.should.have.lengthOf(1)
-      res.body[0].info.batt.status.should.equal(p1.info.batt.status)
+      res.body[0].settings.coef.should.equal(p1.settings.coef)
     })
   })
 }

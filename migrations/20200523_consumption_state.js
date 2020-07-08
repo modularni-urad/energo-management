@@ -4,7 +4,7 @@ exports.up = (knex, Promise) => {
   return knex.schema.createTable(TNAMES.CONSUMPTIONSTATE, (table) => {
     table.integer('pointid').notNullable()
       .references('id').inTable(TNAMES.CONSUMPTIONPOINT)
-    table.string('type', 8)
+    table.string('type', 8).notNullable()
     table.string('author')
     table.float('value').notNullable()
     table.timestamp('created').notNullable().defaultTo(knex.fn.now())

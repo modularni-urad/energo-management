@@ -21,12 +21,19 @@ export default function initDB (migrationsDir) {
   knexHooks(knex)
   knex.addHook('before', 'insert', 'consumption_point', (when, method, table, params) => {
     const data = knexHooks.helpers.getInsertData(params.query)
-    data.info = JSON.stringify(data.info)
+    data.info = data.info ? JSON.stringify(data.info) : '{}'
+    data.settings = JSON.stringify(data.settings)
   })
+
+  function _2JSON (row, attrs) {
+    _.each(attrs, attr => {
+      row[attr] = JSON.parse(row[attr])
+    })
+  }
   knex.addHook('after', 'select', 'consumption_point', (when, method, table, params) => {
-    _.isArray(params.result)
-      ? _.each(params.result, row => { row.info = JSON.parse(row.info) })
-      : params.result.info = JSON.parse(params.result.info)
+    params.result && _.isArray(params.result)
+      ? _.each(params.result, row => { _2JSON(row, ['info', 'settings']) })
+      : _2JSON(params.result, ['info', 'settings'])
   })
 
   return knex.migrate.latest().then(() => {

@@ -7,13 +7,18 @@ export default (ctx) => {
   const app = ctx.express()
 
   app.get('/', (req, res, next) => {
-    knex(TNAMES.CONSUMPTIONPOINT).where(whereFilter(req.query)).then(info => {
+    const perPage = Number(req.query.perPage) || 10
+    const currentPage = Number(req.query.currentPage) || null
+    const query = _.omit(req.query, 'currentPage', 'perPage')
+    let qb = knex(TNAMES.CONSUMPTIONPOINT).where(whereFilter(query))
+    qb = currentPage ? qb.paginate({ perPage, currentPage }) : qb
+    qb.then(info => {
       res.json(info)
       next()
     }).catch(next)
   })
 
-  const editables = ['app_id', 'dev_id', 'info', 'desc', 'lat', 'lng', 'alt']
+  const editables = ['app_id', 'dev_id', 'settings', 'desc', 'lat', 'lng', 'alt']
 
   app.post('/', auth.required, JSONBodyParser, (req, res, next) => {
     req.body = _.pick(req.body, editables)
