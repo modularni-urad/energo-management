@@ -1,45 +1,42 @@
 import { TNAMES } from '../consts'
-import { whereFilter } from 'knex-filter-loopback'
+import entityMWBase from 'entity-api-base'
 import _ from 'underscore'
+const conf = {
+  tablename: TNAMES.CONSUMPTIONPOINT,
+  editables: [
+    'ico', 'buildingid', 'mediums',
+    'sensor_sn', 'sensor_type', 'sensor_id',
+    'distributor_id', 'device_id', 'external_id',
+    'desc', 'coef', 'start',
+    'lat', 'lng', 'alt'
+  ]
+}
 
 export default (ctx) => {
-  const { knex, auth, JSONBodyParser } = ctx
-  const app = ctx.express()
+  const { knex, ErrorClass } = ctx
+  const MW = entityMWBase(conf, knex, ErrorClass)
 
-  app.get('/', (req, res, next) => {
-    const perPage = Number(req.query.perPage) || 10
-    const currentPage = Number(req.query.currentPage) || null
-    const query = _.omit(req.query, 'currentPage', 'perPage')
-    let qb = knex(TNAMES.CONSUMPTIONPOINT).where(whereFilter(query))
-    qb = currentPage ? qb.paginate({ perPage, currentPage }) : qb
-    qb.then(info => {
-      res.json(info)
-      next()
-    }).catch(next)
-  })
+  return { list, create, update }
 
-  const editables = ['app_id', 'dev_id', 'settings', 'desc', 'lat', 'lng', 'alt']
+  function list (query, schema) {
+    query.filter = query.filter ? JSON.parse(query.filter) : {}
+    return MW.list(query, schema)
+  }
 
-  app.post('/', auth.required, JSONBodyParser, (req, res, next) => {
-    req.body = _.pick(req.body, editables)
-    knex(TNAMES.CONSUMPTIONPOINT).returning('id').insert(req.body)
-      .then(savedid => {
-        res.status(201).json(savedid)
-        next()
-      })
-      .catch(next)
-  })
+  function create (body, user, schema) {
+    MW.check_data(body)
+    Object.assign(body, { createdby: user.id })
+    return MW.create(body, schema)
+  }
 
-  app.put('/:id([0-9]+)', auth.required, JSONBodyParser, async (req, res, next) => {
-    try {
-      req.body = _.pick(req.body, editables)
-      await knex(TNAMES.CONSUMPTIONPOINT).where({ id: req.params.id })
-        .update(req.body)
-      res.json(req.body)
-    } catch (err) {
-      next(err)
+  async function update(id, body, user, schema) {
+    const existing = await MW.get(id, schema)
+    if (!existing) throw new ErrorClass(404, 'survey not found')
+    const now = new Date()
+    if (now > existing.voting_start) {
+      throw new ErrorClass(400, 'too late, voting in progress')
     }
-  })
-
-  return app
+    MW.check_data(body)
+    return MW.update(id, body, schema)
+  }
 }

@@ -1,17 +1,25 @@
-import { TNAMES } from '../consts'
+import { TNAMES, tableName } from '../consts'
 
 exports.up = (knex, Promise) => {
-  return knex.schema.createTable(TNAMES.CONSUMPTIONSTATE, (table) => {
+  const builder = process.env.CUSTOM_MIGRATION_SCHEMA
+    ? knex.schema.withSchema(process.env.CUSTOM_MIGRATION_SCHEMA)
+    : knex.schema
+
+  return builder.createTable(TNAMES.CONSUMPTIONSTATE, (table) => {
     table.integer('pointid').notNullable()
-      .references('id').inTable(TNAMES.CONSUMPTIONPOINT)
+      .references('id').inTable(tableName(TNAMES.CONSUMPTIONPOINT))
     table.string('type', 8).notNullable()
     table.string('author')
-    table.float('value').notNullable()
+    table.integer('counter')
+    table.float('value')
     table.timestamp('created').notNullable().defaultTo(knex.fn.now())
     table.primary(['pointid', 'type', 'created'])
   })
 }
 
 exports.down = (knex, Promise) => {
-  return knex.schema.dropTable(TNAMES.CONSUMPTIONSTATE)
+  const builder = process.env.CUSTOM_MIGRATION_SCHEMA
+    ? knex.schema.withSchema(process.env.CUSTOM_MIGRATION_SCHEMA)
+    : knex.schema
+  return builder.dropTable(TNAMES.CONSUMPTIONSTATE)
 }

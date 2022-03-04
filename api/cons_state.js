@@ -1,53 +1,52 @@
-import { whereFilter } from 'knex-filter-loopback'
-import { TNAMES } from '../consts'
+import { TNAMES, getQB } from '../consts'
+import entityMWBase from 'entity-api-base'
 import _ from 'underscore'
+const conf = {
+  tablename: TNAMES.SURVEYS
+}
 
 export default (ctx) => {
-  const { knex, auth, JSONBodyParser } = ctx
-  const app = ctx.express()
+  const { knex, ErrorClass } = ctx
+  const MW = entityMWBase(conf, knex, ErrorClass)
 
-  app.get('/', (req, res, next) => {
-    knex(TNAMES.CONSUMPTIONSTATE).where(whereFilter(req.query)).then(info => {
-      res.json(info)
-      next()
-    }).catch(next)
-  })
+  return { list, create }
 
-  function _insertData (cPoint, body, author, created) {
-    const data = _.map(body, (value, type) => {
-      // TODO: if type === battery ...
-      const coef = cPoint.settings.coef ? cPoint.info.coef : 1
-      value = value * (coef || 1)
-      // TODO: update mean
-      return { pointid: cPoint.id, author, value, type, created }
-    })
-    return knex(TNAMES.CONSUMPTIONSTATE).insert(data)
+  function list (query, schema) {
+    query.filter = query.filter ? JSON.parse(query.filter) : {}
+    return MW.list(query, schema)
   }
 
-  async function createDataManual (devid, body, UID) {
+  async function create (pointid, body, user, schema) {
+    const pointQB = getQB(knex, TNAMES.CONSUMPTIONPOINT, schema).where({ id: pointid })
+    const point = await pointQB.first()
+    if (body.sequence && point.last_sequence === body.sequence) {
+      return 'omited due same sequence number'
+    }
+    return Promise.all([
+      _insertData(point, body, user, schema),
+      pointQB.update({ last_sequence: body.sequence })
+    ])
+  }
+
+  function _insertData (cPoint, body, author, schema) {
+    const mediums = cPoint.mediums.split('|')
+    const data = _.map(mediums, (type) => {
+      const counter = Number(body[type])
+      const value = cPoint.start && cPoint.coef
+        ? (counter + cPoint.start) * cPoint.coef
+        : null
+      // TODO: update mean
+      return { pointid: cPoint.id, counter, author, value, type, created: body.time }
+    })
+    return getQB(knex, TNAMES.CONSUMPTIONSTATE, schema).insert(data)
+  }
+
+  async function createManual (devid, body, UID) {
     const cond = { id: devid }
-    const cPoint = await knex(TNAMES.CONSUMPTIONPOINT).where(cond).first()
+    
     if (!cPoint) throw new Error(404)
     const prj = await _insertData(cPoint, body, UID)
     return prj
   }
 
-  async function createDataAuto (body) {
-    const cond = _.pick(body, 'app_id', 'dev_id')
-    const cPoint = await knex(TNAMES.CONSUMPTIONPOINT).where(cond).first()
-    if (!cPoint) throw new Error(404)
-    const prj = await _insertData(cPoint, body.payload_fields, null, body.time)
-    return prj
-  }
-
-  app.post('/:id', auth.required, JSONBodyParser, (req, res, next) => {
-    createDataManual(req.params.id, req.body, auth.getUID(req))
-      .then(createdid => (res.json(createdid)))
-      .catch(next)
-  })
-  app.post('/', JSONBodyParser, (req, res, next) => {
-    createDataAuto(req.body).then(created => (res.json(created))).catch(next)
-  })
-
-  return app
 }

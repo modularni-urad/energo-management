@@ -13,5 +13,18 @@ export const STATUS = {
 export const MEDIUMTYPE = {
   BATT: 'batt',
   WATER: 'watr',
-  ELEKTRO: 'elek'
+  WATER_REV: 'wrev',
+  ELEKTRO: 'elek',
+  ELEKTRO_LOW: 'elow'
+}
+
+export function getQB (knex, tablename, schema) {
+  return schema
+    ? knex(knex.ref(tablename).withSchema(schema))
+    : knex(tablename)
+}
+export function tableName (tname) {
+  return process.env.CUSTOM_MIGRATION_SCHEMA 
+    ? `${process.env.CUSTOM_MIGRATION_SCHEMA}.${tname}`
+    : tname
 }

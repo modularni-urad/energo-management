@@ -1,34 +1,29 @@
 {
-  "name": "modularni-urad-energo-management",
+  "name": "modularni-urad-energo-man",
   "version": "1.0.0",
   "description": "API pro energeticky management",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node -r esm -r dotenv/config server.js",
-    "startdbg": "node -r esm -r dotenv/config --inspect-brk server.js",
-    "test": "mocha -r esm -r ./test/utils/env --exit './test/main.js'",
-    "testdbg": "mocha -r esm -r ./test/utils/env --inspect-brk './test/main.js'"
+    "start": "node -r esm server.js",
+    "test": "mocha -r esm --exit './test/main.js'",
+    "testdbg": "mocha -r esm --exit --inspect './test/main.js'"
   },
   "author": "Vaclav Klecanda <vencax77@gmail.com> (http://vxk.cz)",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.2",
-    "cors": "^2.8.4",
-    "dotenv": "^6.0.0",
     "esm": "^3.2.25",
     "express": "^4.16.2",
-    "knex-filter-loopback": "^0.3.0",
-    "knex-paginate": "^1.2.1",
-    "modularni-urad-utils": "https://github.com/modularni-urad/utils",
-    "morgan": "^1.9.0",
+    "modularni-urad-utils": "^1.5",
+    "entity-api-base": "^0.2.0",
     "underscore": "^1.9.1"
   },
   "devDependencies": {
+    "axios": "^0.24.0",
     "chai": "^4.1.2",
     "chai-http": "^4.2.0",
     "expect": "^1.20.2",
     "jsdom": "^9.8.0",
-    "knex-hooks": "0.0.9",
+    "knex-paginate": "^3.0.0",
     "mocha": "^5.2.0",
     "sqlite3": "^4.0.4"
   },

@@ -1,11 +1,21 @@
-import initPointRoutes from './api/cons_points'
-import initStateRoutes from './api/cons_state'
+import path from 'path'
+import initRoutes from './api/routes.js'
 
-export default (ctx) => {
-  const app = ctx.express()
-
-  app.use('/points', initPointRoutes(ctx))
-  app.use('/state', initStateRoutes(ctx))
-
-  return app
+export async function migrateDB (knex, schemas = null) {
+  const opts = {
+    directory: path.join(__dirname, 'migrations')
+  }
+  async function migrate2schema(schemaName) {
+    await knex.raw(`CREATE SCHEMA IF NOT EXISTS "${schemaName}"`)
+    const o = Object.assign({}, opts, { schemaName })
+    process.env.CUSTOM_MIGRATION_SCHEMA = schemaName
+    await knex.migrate.latest(o)
+  }
+  return schemas
+    ? schemas.reduce((p, schema) => {
+        return p.then(() => migrate2schema(schema))
+      }, Promise.resolve())
+    : knex.migrate.latest(opts)
 }
+
+export const init = initRoutes
