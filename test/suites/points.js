@@ -5,7 +5,6 @@ module.exports = (g) => {
   const r = g.chai.request(g.baseurl)
 
   const p1 = g.p = {
-    mediums: `${MEDIUMTYPE.ELEKTRO}|${MEDIUMTYPE.ELEKTRO_LOW}`,
     ico: '904343',
     buildingid: 'p1',
     desc: 'current sensing device',
@@ -15,8 +14,13 @@ module.exports = (g) => {
     'distributor_id': 333, 
     'device_id': 1, 
     'external_id': 5,
-    'coef': 2, 
-    'start': '10|100'
+    settings: {
+      [MEDIUMTYPE.ELEKTRO]: { coef: 2, start: 10 },
+      [MEDIUMTYPE.ELEKTRO_LOW]: { coef: 2, start: 10 }
+    }
+  }
+  function _createPostData () {
+    return Object.assign({}, p1, { settings: JSON.stringify(p1.settings) })
   }
 
   return describe('points', () => {
@@ -27,7 +31,8 @@ module.exports = (g) => {
     })
 
     it('shall create a new item p1', async () => {
-      const res = await r.post(`/`).send(p1).set('Authorization', 'Bearer f')
+      const data = _createPostData()
+      const res = await r.post(`/`).send(data).set('Authorization', 'Bearer f')
       res.status.should.equal(200)
     })
 
@@ -35,7 +40,7 @@ module.exports = (g) => {
       const res = await r.get('/')
       res.status.should.equal(200)
       res.body.should.have.lengthOf(1)
-      res.body[0].coef.should.equal(p1.coef)
+      res.body[0].sensor_sn.should.equal(p1.sensor_sn)
       p1.id = res.body[0].id
     })
 

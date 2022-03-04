@@ -4,10 +4,10 @@ import _ from 'underscore'
 const conf = {
   tablename: TNAMES.CONSUMPTIONPOINT,
   editables: [
-    'ico', 'buildingid', 'mediums',
+    'ico', 'buildingid',
     'sensor_sn', 'sensor_type', 'sensor_id',
     'distributor_id', 'device_id', 'external_id',
-    'desc', 'coef', 'start',
+    'desc', 'settings',
     'lat', 'lng', 'alt'
   ]
 }

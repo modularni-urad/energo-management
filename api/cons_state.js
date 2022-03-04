@@ -2,7 +2,7 @@ import { TNAMES, getQB } from '../consts'
 import entityMWBase from 'entity-api-base'
 import _ from 'underscore'
 const conf = {
-  tablename: TNAMES.SURVEYS
+  tablename: TNAMES.CONSUMPTIONSTATE
 }
 
 export default (ctx) => {
@@ -29,24 +29,18 @@ export default (ctx) => {
   }
 
   function _insertData (cPoint, body, author, schema) {
-    const mediums = cPoint.mediums.split('|')
-    const data = _.map(mediums, (type) => {
+    const pointSettings = _.isObject(cPoint.settings) 
+      ? cPoint.settings
+      : JSON.parse(cPoint.settings)
+    const data = _.map(pointSettings, (settings, type) => {
       const counter = Number(body[type])
-      const value = cPoint.start && cPoint.coef
-        ? (counter + cPoint.start) * cPoint.coef
+      const value = settings.start && settings.coef
+        ? (counter + settings.start) * settings.coef
         : null
       // TODO: update mean
       return { pointid: cPoint.id, counter, author, value, type, created: body.time }
     })
     return getQB(knex, TNAMES.CONSUMPTIONSTATE, schema).insert(data)
-  }
-
-  async function createManual (devid, body, UID) {
-    const cond = { id: devid }
-    
-    if (!cPoint) throw new Error(404)
-    const prj = await _insertData(cPoint, body, UID)
-    return prj
   }
 
 }

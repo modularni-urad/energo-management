@@ -9,7 +9,15 @@ exports.up = (knex, Promise) => {
     table.increments('id').primary()
     table.string('ico')
     table.string('buildingid')
-    table.string('mediums').notNullable() // co to meri za veliciny
+
+    // keys: ID veliciny, vals:  { value, mean, status }
+    table.json('info').notNullable().defaultTo({})
+
+    // keys: ID veliciny, vals: {
+    //  coef: // koeficient pro prepocet counter -> value
+    //  start: // pocatecni hodnota counteru pro prepocet
+    // }
+    table.json('settings').notNullable().defaultTo({})
 
     table.integer('last_sequence') // prevence duplicit
 
@@ -22,8 +30,6 @@ exports.up = (knex, Promise) => {
     table.string('device_id') // cislo produktomeru
     table.string('external_id')
 
-    table.float('coef') // koeficient pro prepocet counter -> value
-    table.string('start') // pocatecni hodnota counteru pro prepocet
     table.string('alerts')
     table.float('lat')
     table.float('lng')
