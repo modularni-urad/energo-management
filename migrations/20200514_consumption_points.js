@@ -31,8 +31,7 @@ exports.up = (knex, Promise) => {
     table.string('external_id')
 
     table.string('alerts')
-    table.float('lat')
-    table.float('lng')
+    table.string('position')
     table.float('alt')
     table.string('createdby')
     table.timestamp('created').notNullable().defaultTo(knex.fn.now())
