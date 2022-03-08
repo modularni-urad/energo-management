@@ -8,7 +8,7 @@ export default (ctx) => {
   const StateMW = StateMWarez(ctx)
 
   // state
-  app.post('/state/:id', auth.session, auth.required, bodyParser, (req, res, next) => {
+  app.post('/state/:id?', auth.session, auth.required, bodyParser, (req, res, next) => {
     StateMW.create(req.params.id, req.body, auth.getUID(req), req.tenantid)
       .then(created => (res.json(created)))
       .catch(next)

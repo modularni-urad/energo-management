@@ -17,6 +17,8 @@ export default (ctx) => {
   }
 
   async function create (pointid, body, user, schema) {
+    pointid = pointid || body.id
+    if (!pointid) throw new ErrorClass(400, 'point.id is missing')
     const pointQB = getQB(knex, TNAMES.CONSUMPTIONPOINT, schema).where({ id: pointid })
     const point = await pointQB.first()
     if (body.sequence && point.last_sequence === body.sequence) {
