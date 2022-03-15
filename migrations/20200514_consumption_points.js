@@ -22,6 +22,7 @@ exports.up = (knex, Promise) => {
     table.integer('last_sequence') // prevence duplicit
 
     table.string('desc')
+    table.string('note')
     table.string('sensor_sn') // cislo senzoru
     table.string('sensor_type') // typ sensoru
     table.string('sensor_id') // ID sensoru v IOT systemu
