@@ -8,6 +8,7 @@ exports.up = (knex, Promise) => {
   return builder.createTable(TNAMES.CONSUMPTIONPOINT, (table) => {
     table.increments('id').primary()
     table.string('ico')
+    table.integer('medium').notNullable()
     table.string('buildingid')
 
     // keys: ID veliciny, vals:  { value, mean, status }

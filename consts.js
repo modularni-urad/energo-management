@@ -10,6 +10,11 @@ export const STATUS = {
   UNDER: 'under'
 }
 
+// export const MEDIUM = {
+//   [0]: 'electricity',
+//   [1]: 'water'
+// }
+
 export const MEDIUMTYPE = {
   BATT: 'batt',
   WATER: 'watr',

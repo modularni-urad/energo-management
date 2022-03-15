@@ -8,7 +8,7 @@ const conf = {
     'sensor_sn', 'sensor_type', 'sensor_id',
     'distributor_id', 'device_id', 'external_id',
     'desc', 'settings',
-    'position', 'alt', 'note'
+    'position', 'alt', 'note', 'medium'
   ]
 }
 

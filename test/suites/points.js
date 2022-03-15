@@ -14,6 +14,7 @@ module.exports = (g) => {
     'distributor_id': 333, 
     'device_id': 1, 
     'external_id': 5,
+    'medium': 0,
     settings: {
       [MEDIUMTYPE.ELEKTRO]: { coef: 2, start: 10 },
       [MEDIUMTYPE.ELEKTRO_LOW]: { coef: 2, start: 10 }
